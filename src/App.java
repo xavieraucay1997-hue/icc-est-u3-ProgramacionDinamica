@@ -1,11 +1,25 @@
+import java.util.List;
+
 public class App {
 
     public static void main(String[] args) throws Exception {
         //runFibonaci();
-        runFibonaciRecPD();
+        //runFibonaciRecPD();
+        //runfibbonaciIterativo();
+        runMaze();
+
+
         
 
     }
+
+    private static void runMaze() {
+    Maze impr = new Maze();
+    }
+        
+
+
+
     private static void runFibonaci() {
         long startTime = System.nanoTime();
         int num = 48;
@@ -85,6 +99,7 @@ public class App {
         for(int i = 2; i <= num; i++){
             res = a + b;
             a = b;
+            b = res;
 
         }
         return res;
