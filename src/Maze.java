@@ -1,95 +1,115 @@
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
+/**
+ * Maze
+ */
 public class Maze {
     private int[][] maze;
 
-    public Maze() {
-        this.maze = new int[][]{
-            {0, 0, 0, 1, 0, 0},
-            {1, 1, 0, 1, 0, 1},
-            {0, 1, 0, 0, 0, 0},
-            {0, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 0, 0},
-            {0, 1, 1, 0, 1, 0},
+    public Maze(){
+        this.maze=new int[][]{
+
+                {0, 0, 0, 1, 0, 0},
+                {1, 1, 0, 1, 0, 1},
+                {0, 1, 0, 0, 0, 0},
+                {0, 1, 1, 1, 1, 0},
+                {0, 0, 0, 0, 0, 0},
+                {0, 1, 1, 0, 1, 0},
+            
+
         };
+        Celda inicio= new Celda(0,0);
+        Celda fin= new Celda(2,0);
 
-        Celda inicio = new Celda(0, 0); 
-        Celda fin = new Celda(5, 5); 
+
+        List<Celda> camino=new LinkedList<>();
+        Set<Celda> visitados= new HashSet<>();
+        
+        boolean encontrado= findPath(
+            maze,inicio,fin,visitados,camino );
+        if(encontrado){
+            System.out.println("\n Camino encontrado");
+            printMazeWithPath(visitados,camino);
+                        System.out.println("\n Celdad de camino");
+                        System.out.println(camino);
+            
+                    }else{
+                        System.out.println("\n No existe el camino");
+                    }
+                }
+                private void printMazeWithPath(Set<Celda> visitados,List<Celda> camino) {
+                    for(int i=0; i<maze.length;i++){
+                        for(int j=0; j<maze.length;j++){
+                            Celda actual= new Celda(i,j);
+                            if(camino.contains(actual)){
+                                System.out.print(" * ");
+                                
+                            }else if(maze[i][j]==1){
+                                System.out.print(" # ");
+                            }else{
+                                System.out.print(" . ");
+                            }
                             
-
-        List<Celda> camino = new ArrayList<>(); 
-
-        Set<Celda> visitados = new HashSet<>(); 
-
-        boolean encontrado = findPath(maze, inicio, fin, camino, visitados);
-
-        if (encontrado) {
-            System.out.println("\nCamino encontrado:");
-            printMazeWithPath(camino);
-
-            System.out.println("\nCeldas del camino:");
-            System.out.println(camino);
-        } else {
-            System.out.println("\nNo existe un camino");
-        }
-    }
-
-    private boolean findPath(int[][] maze, Celda actual, Celda fin, List<Celda> camino, Set<Celda> visitados) {
-        int fila = actual.getX();
-        int columna = actual.getY(); 
-        if (fila < 0 || fila >= maze.length || columna < 0 || columna >= maze[0].length) {
-            return false; 
-        }
-
-        if (maze[fila][columna] == 1 || visitados.contains(actual)) {
+                        }
+                        System.out.println();
+                        
+                    }
+                }
+        private boolean findPath(int [][] maze, Celda inicio,Celda fin,Set<Celda> visitados,List<Celda> camino){
+        int fila=inicio.getX();
+        int columna= inicio.getY();
+        if(fila<0 || fila>=maze.length|| columna<0 || columna>=maze[0].length){
             return false;
         }
-        visitados.add(actual);
-        camino.add(actual);
-
-        if(actual.equals(fin)){
+        if(maze[fila][columna]==1){
+            return false;
+        }
+        if(visitados.contains(inicio)){
+            return false;
+        }
+        visitados.add(inicio);
+        camino.add(inicio);
+        if(inicio.equals(fin)){
+            camino.add(inicio);
             return true;
         }
-        if (findPath(maze, new Celda(fila, columna + 1), fin, camino, visitados)) {
-            return true; 
-        }
+        
+        Celda derecha= new Celda(fila, columna+1);
+        
 
-        if (findPath(maze, new Celda(fila + 1, columna), fin, camino, visitados)) {
+        if(findPath(maze, derecha, fin,visitados, camino)){
             return true;
         }
-
-        if (findPath(maze, new Celda(fila, columna - 1), fin, camino, visitados)) {
+        
+        Celda abajo= new Celda(fila+1, columna);
+        if(findPath(maze, abajo, fin,visitados, camino)){
             return true;
         }
-        if (findPath(maze, new Celda(fila - 1, columna), fin, camino, visitados)) {
+       
+
+        Celda izquierda=new Celda(fila,columna-1);
+        if(findPath(maze, izquierda, fin,visitados, camino)){
             return true;
         }
-        camino.remove(camino.size() - 1);
-        visitados.remove(actual); 
-
-        return false; 
-    }
-    private void printMazeWithPath(List<Celda> camino) {
-        Set<Celda> caminoSet = new HashSet<>(camino);
-        for (int i = 0; i < maze.length; i++) {
-            for (int j = 0; j < maze[i].length; j++) {
-                Celda actual = new Celda(i, j);
+        
+        Celda arriba=new Celda(fila-1, columna);
+        if (findPath(maze, arriba, fin,visitados, camino)) {
+            return true;
             
-                if (caminoSet.contains(actual)) {
-                    System.out.print("*");
-                } else if (maze[i][j] == 1) {
-                    System.out.print("#");
-                } else {
-                 
-                   System.out.print(". ");
-                }
-
-            }
-            System.out.println(); 
         }
+ 
+        camino.remove(camino.size()-1);
+        
+        return false;
+
+        
+        
+
     }
+
 }
